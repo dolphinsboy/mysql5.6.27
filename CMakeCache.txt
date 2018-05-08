@@ -286,7 +286,7 @@ FORM_LIBRARY:FILEPATH=/usr/lib64/libform.so
 GETCONF:FILEPATH=/usr/bin/getconf
 
 //git command line client
-GIT_EXECUTABLE:FILEPATH=/usr/local/bin/git
+GIT_EXECUTABLE:FILEPATH=GIT_EXECUTABLE-NOTFOUND
 
 //path to the executable
 GLIBTOOLIZE_EXECUTABLE:FILEPATH=GLIBTOOLIZE_EXECUTABLE-NOTFOUND
@@ -469,9 +469,6 @@ WITH_PERFSCHEMA_STORAGE_ENGINE:BOOL=ON
 //Generate PIC objects
 WITH_PIC:BOOL=OFF
 
-//No help, variable specified on the command line.
-WITH_SPARTAN_STORAGE_ENGING:UNINITIALIZED=1
-
 //bundled (use yassl), yes (prefer os library if present, otherwise
 // use bundled), system (use os library), </path/to/custom/installation>
 WITH_SSL:STRING=bundled
@@ -632,7 +629,7 @@ slave_LIB_DEPENDS:STATIC=general;-lpthread;
 spartan_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;
 
 //Dependencies for the target
-sql_LIB_DEPENDS:STATIC=general;-lpthread;general;csv;general;myisammrg;general;federated;general;blackhole;general;heap;general;archive;general;zlib;general;perfschema;general;myisam;general;innobase;general;zlib;general;partition;general;mysys;general;mysys_ssl;general;dbug;general;strings;general;vio;general;regex;general;crypt;general;dl;general;yassl;general;taocrypt;
+sql_LIB_DEPENDS:STATIC=general;-lpthread;general;blackhole;general;archive;general;zlib;general;federated;general;myisammrg;general;perfschema;general;innobase;general;zlib;general;heap;general;myisam;general;csv;general;partition;general;mysys;general;mysys_ssl;general;dbug;general;strings;general;vio;general;regex;general;crypt;general;dl;general;yassl;general;taocrypt;
 
 //Dependencies for the target
 sql_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
@@ -860,8 +857,6 @@ DTRACE-ADVANCED:INTERNAL=1
 ENABLED_LOCAL_INFILE-ADVANCED:INTERNAL=1
 //Details about finding Curses
 FIND_PACKAGE_MESSAGE_DETAILS_Curses:INTERNAL=[/usr/lib64/libcurses.so][/usr/include][v()]
-//Details about finding Git
-FIND_PACKAGE_MESSAGE_DETAILS_Git:INTERNAL=[/usr/local/bin/git][v2.1.0()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Have symbol FIONREAD
@@ -1073,17 +1068,13 @@ HAVE_IB_GCC_ATOMIC_BUILTINS_COMPILED:INTERNAL=TRUE
 //Result of TRY_RUN
 HAVE_IB_GCC_ATOMIC_BUILTINS_EXITCODE:INTERNAL=0
 //Test HAVE_IB_GCC_ATOMIC_TEST_AND_SET
-HAVE_IB_GCC_ATOMIC_TEST_AND_SET:INTERNAL=1
+HAVE_IB_GCC_ATOMIC_TEST_AND_SET:INTERNAL=
 //Result of TRY_COMPILE
-HAVE_IB_GCC_ATOMIC_TEST_AND_SET_COMPILED:INTERNAL=TRUE
-//Result of TRY_RUN
-HAVE_IB_GCC_ATOMIC_TEST_AND_SET_EXITCODE:INTERNAL=0
+HAVE_IB_GCC_ATOMIC_TEST_AND_SET_COMPILED:INTERNAL=FALSE
 //Test HAVE_IB_GCC_ATOMIC_THREAD_FENCE
-HAVE_IB_GCC_ATOMIC_THREAD_FENCE:INTERNAL=1
+HAVE_IB_GCC_ATOMIC_THREAD_FENCE:INTERNAL=
 //Result of TRY_COMPILE
-HAVE_IB_GCC_ATOMIC_THREAD_FENCE_COMPILED:INTERNAL=TRUE
-//Result of TRY_RUN
-HAVE_IB_GCC_ATOMIC_THREAD_FENCE_EXITCODE:INTERNAL=0
+HAVE_IB_GCC_ATOMIC_THREAD_FENCE_COMPILED:INTERNAL=FALSE
 //Test HAVE_IB_GCC_SYNC_SYNCHRONISE
 HAVE_IB_GCC_SYNC_SYNCHRONISE:INTERNAL=1
 //Result of TRY_COMPILE
@@ -1667,7 +1658,7 @@ INSTALL_SUPPORTFILESDIR-ADVANCED:INTERNAL=1
 LIBTOOLIZE_EXECUTABLE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: MANUFACTURER
 MANUFACTURER-ADVANCED:INTERNAL=1
-MYSQLD_STATIC_PLUGIN_LIBS:INTERNAL=csv;myisammrg;federated;blackhole;heap;archive;zlib;perfschema;myisam;innobase;zlib;partition
+MYSQLD_STATIC_PLUGIN_LIBS:INTERNAL=blackhole;archive;zlib;federated;myisammrg;perfschema;innobase;zlib;heap;myisam;csv;partition
 //ADVANCED property for variable: MYSQL_BASE_VERSION
 MYSQL_BASE_VERSION-ADVANCED:INTERNAL=1
 //MySQL Base version

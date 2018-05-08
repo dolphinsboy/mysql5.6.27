@@ -92,6 +92,12 @@
 #include "ha_spartan.h"
 #include "probes_mysql.h"
 #include "sql_plugin.h"
+#include <my_dir.h>
+
+/*BEGIN GUOSONG MODIFICATION*/
+#define SDE_EXT ".sde"
+#define SDI_EXT ".sdi"
+/*END GUOSONG MODIFICATION*/
 
 static handler *spartan_create_handler(handlerton *hton,
                                        TABLE_SHARE *table, 
@@ -105,11 +111,11 @@ static bool spartan_is_supported_system_table(const char *db,
                                       const char *table_name,
                                       bool is_sql_layer_system_table);
 #ifdef HAVE_PSI_INTERFACE
-static PSI_mutex_key ex_key_mutex_spartan_share_mutex;
+static PSI_mutex_key ex_key_mutex_Spartan_share_mutex;
 
 static PSI_mutex_info all_spartan_mutexes[]=
 {
-  { &ex_key_mutex_spartan_share_mutex, "spartan_share::mutex", 0}
+  { &ex_key_mutex_Spartan_share_mutex, "Spartan_share::mutex", 0}
 };
 
 static void init_spartan_psi_keys()
@@ -122,11 +128,14 @@ static void init_spartan_psi_keys()
 }
 #endif
 
-spartan_share::spartan_share()
+Spartan_share::Spartan_share()
 {
   thr_lock_init(&lock);
-  mysql_mutex_init(ex_key_mutex_spartan_share_mutex,
+  mysql_mutex_init(ex_key_mutex_Spartan_share_mutex,
                    &mutex, MY_MUTEX_INIT_FAST);
+  /*BEGIN GUOSONG MODIFICATION*/
+  data_class = new Spartan_data();
+  /*END GUOSONG MODIFICATION*/
 }
 
 
@@ -157,16 +166,16 @@ static int spartan_init_func(void *p)
   they are needed to function.
 */
 
-spartan_share *ha_spartan::get_share()
+Spartan_share *ha_spartan::get_share()
 {
-  spartan_share *tmp_share;
-
+  Spartan_share *tmp_share;
+  
   DBUG_ENTER("ha_spartan::get_share()");
 
   lock_shared_ha_data();
-  if (!(tmp_share= static_cast<spartan_share*>(get_ha_share_ptr())))
+  if (!(tmp_share= static_cast<Spartan_share*>(get_ha_share_ptr())))
   {
-    tmp_share= new spartan_share;
+    tmp_share= new Spartan_share;
     if (!tmp_share)
       goto err;
 
@@ -209,6 +218,11 @@ ha_spartan::ha_spartan(handlerton *hton, TABLE_SHARE *table_arg)
 */
 
 static const char *ha_spartan_exts[] = {
+/*BEGIN GUOSONG MODIFICATION*/
+  SDE_EXT,
+  SDI_EXT,
+/*END GUOSONG MODIFICATION*/
+
   NullS
 };
 
@@ -296,9 +310,18 @@ static bool spartan_is_supported_system_table(const char *db,
 int ha_spartan::open(const char *name, int mode, uint test_if_locked)
 {
   DBUG_ENTER("ha_spartan::open");
-
+  /*BEGIN GUOSONG MODIFICATION*/
+  Spartan_share *share;
+  char name_buff[FN_REFLEN];
   if (!(share = get_share()))
     DBUG_RETURN(1);
+  share->data_class->open_table(fn_format(name_buff, name, "", SDE_EXT,
+              MY_REPLACE_EXT|MY_UNPACK_FILENAME));
+
+  /*if (!(share = get_share()))
+    DBUG_RETURN(1);*/
+  /*END GUOSONG MODIFICATION*/
+
   thr_lock_data_init(&share->lock,&lock,NULL);
 
   DBUG_RETURN(0);
@@ -833,6 +856,11 @@ int ha_spartan::delete_table(const char *name)
 {
   DBUG_ENTER("ha_spartan::delete_table");
   /* This is not implemented but we want someone to be able that it works. */
+  /*BEGIN GUOSONG MODIFICATION*/
+  char name_buff[FN_REFLEN];
+  my_delete(fn_format(name_buff, name, "",
+          SDE_EXT,MY_REPLACE_EXT|MY_UNPACK_FILENAME), MYF(0));
+  /*END GUOSONG MODIFICATION*/
   DBUG_RETURN(0);
 }
 
@@ -853,8 +881,19 @@ int ha_spartan::delete_table(const char *name)
 */
 int ha_spartan::rename_table(const char * from, const char * to)
 {
+  /*BEGIN GUOSONG MODIFICATION*/
+  char data_from[FN_REFLEN];
+  char data_to[FN_REFLEN];
+  int i = 0;
+
   DBUG_ENTER("ha_spartan::rename_table ");
-  DBUG_RETURN(HA_ERR_WRONG_COMMAND);
+  /*i = my_copy(fn_format(data_from, from, "", SDE_EXT,
+          MY_REPLACE_EXT|MY_UNPACK_FILENAME),
+          fn_format(data_to, to,"",SDE_EXT,
+          MY_REPLACE_EXT|MY_UNPACK_FILENAME), MYF(0));*/
+  my_delete(data_from, MYF(0));
+  DBUG_RETURN(i);
+  /*DBUG_RETURN(HA_ERR_WRONG_COMMAND);*/
 }
 
 
@@ -906,6 +945,17 @@ int ha_spartan::create(const char *name, TABLE *table_arg,
     This is not implemented but we want someone to be able to see that it
     works.
   */
+  /*BEGIN GUOSONG MODIFICATION*/
+  char name_buff[FN_REFLEN];
+
+  if(!(share = get_share()))
+      DBUG_RETURN(1);
+
+  if(share->data_class->create_table(fn_format(name_buff, name, "",SDE_EXT,
+                  MY_REPLACE_EXT|MY_UNPACK_FILENAME)))
+        DBUG_RETURN(-1);
+  share->data_class->close_table();
+  /*END GUOSONG MODIFICATION*/
   DBUG_RETURN(0);
 }
 

@@ -13,6 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-SET(spartan_PLUGIN_DYNAMIC "ha_spartan")
-SET(spartan_SOURCES ha_spartan.cc spartan_data.cc)
-MYSQL_ADD_PLUGIN(spartan ${spartan_SOURCES} STORAGE_ENGINE MODULE_ONLY)
+SET(SPARTAN_PLUGIN_STATIC "spartan")
+SET(SPARTAN_PLUGIN_DYNAMIC "spartan")
+SET(SPARTAN_SOURCES ha_spartan.cc spartan_data.cc ha_spartan.h)
+MYSQL_ADD_PLUGIN(spartan ${SPARTAN_SOURCES} STORAGE_ENGINE MODULE_ONLY)

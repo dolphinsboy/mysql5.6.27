@@ -39,19 +39,27 @@
 #include "spartan_data.h"
 
 /** @brief
-  spartan_share is a class that will be shared among all open handlers.
+  Spartan_share is a class that will be shared among all open handlers.
   This spartan implements the minimum of what you will probably need.
 */
-class spartan_share : public Handler_share {
+class Spartan_share : public Handler_share {
 public:
   mysql_mutex_t mutex;
   THR_LOCK lock;
-  spartan_share();
-  ~spartan_share()
+  Spartan_share();
+  ~Spartan_share()
   {
+    /*BEGIN GUOSONG MODIFICATION*/
+    if(data_class != NULL)
+      delete data_class;
+    data_class = NULL;
+    /*END GUOSONG MODIFICATION*/
     thr_lock_delete(&lock);
     mysql_mutex_destroy(&mutex);
   }
+  /*BEGIN GUOSONG MODIFICATION*/
+  Spartan_data *data_class;
+  /*END GUOSONG MODIFICATION*/ 
 };
 
 /** @brief
@@ -60,8 +68,8 @@ public:
 class ha_spartan: public handler
 {
   THR_LOCK_DATA lock;      ///< MySQL lock
-  spartan_share *share;    ///< Shared lock info
-  spartan_share *get_share(); ///< Get the share
+  Spartan_share *share;    ///< Shared lock info
+  Spartan_share *get_share(); ///< Get the share
 
 public:
   ha_spartan(handlerton *hton, TABLE_SHARE *table_arg);
