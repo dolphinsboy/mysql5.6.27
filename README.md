@@ -68,7 +68,7 @@ enum legacy_db_type
 
 ## 2.创建Spartan引擎表
 
-###2.1 更新ha_spartan.h头文件
+### 2.1 更新ha_spartan.h头文件
 
 ```c
 #include "spartan_data.h"
@@ -94,7 +94,7 @@ public:
 };
 ```
 
-###2.2 更新ha_spartan.cc类文件
+### 2.2 更新ha_spartan.cc类文件
 
 ```c
 Spartan_share::Spartan_share()
@@ -108,7 +108,7 @@ Spartan_share::Spartan_share()
 }
 ```
 
-###2.3 更新文件后缀扩展
+### 2.3 更新文件后缀扩展
 
 ```c
 /*BEGIN GUOSONG MODIFICATION*/
@@ -126,7 +126,7 @@ static const char *ha_spartan_exts[] = {
 };
 ```
 
-###2.4 修改ha_spartan.cc中create函数
+### 2.4 修改ha_spartan.cc中create函数
 
 ```c
 int ha_spartan::create(const char *name, TABLE *table_arg,
@@ -152,7 +152,7 @@ int ha_spartan::create(const char *name, TABLE *table_arg,
 }
 ```
 
-###2.5 修改ha_spartan.cc中open函数
+### 2.5 修改ha_spartan.cc中open函数
 
 ```c
 int ha_spartan::open(const char *name, int mode, uint test_if_locked)
@@ -177,7 +177,7 @@ int ha_spartan::open(const char *name, int mode, uint test_if_locked)
 
 ```
 
-###2.6 修改ha_spartan.cc中delete_table函数
+### 2.6 修改ha_spartan.cc中delete_table函数
 
 ```c
 int ha_spartan::delete_table(const char *name)
@@ -193,7 +193,7 @@ int ha_spartan::delete_table(const char *name)
 }
 ```
 
-###2.7 修改ha_spartan.cc中rename_table
+### 2.7 修改ha_spartan.cc中rename_table
 
 ```c
 int ha_spartan::rename_table(const char * from, const char * to)
@@ -214,7 +214,7 @@ int ha_spartan::rename_table(const char * from, const char * to)
 }
 ```
 
-###2.8 测试
+### 2.8 测试
 
 ```sql
 mysql> show create table t1\G
