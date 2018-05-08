@@ -3,6 +3,8 @@
 
 ### 添加spartan_data以及spartan_index
 
+在storage/spartan目录创建
+
 ```
 spartan_data.cc
 spartan_data.h
