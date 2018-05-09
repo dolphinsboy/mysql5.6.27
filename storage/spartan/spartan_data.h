@@ -1,5 +1,4 @@
 #pragma once
-#pragma unmanaged
 #include "my_global.h"
 #include "my_sys.h"
 

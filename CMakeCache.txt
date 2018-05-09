@@ -37,12 +37,9 @@ BISON_EXECUTABLE:FILEPATH=/usr/bin/bison
 //path to the executable
 CAT_EXECUTABLE:FILEPATH=/bin/cat
 
-//Path to a program.
-CMAKE_AR:FILEPATH=/usr/bin/ar
-
 //Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
 //\n CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel
-CMAKE_BUILD_TYPE:STRING=RelWithDebInfo
+CMAKE_BUILD_TYPE:STRING=Debug
 
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
@@ -109,9 +106,6 @@ CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
 CMAKE_INSTALL_PREFIX:PATH=/home/guosong/mysql5627
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=/usr/bin/ld
-
-//Path to a program.
 CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/gmake
 
 //Flags used by the linker during the creation of modules.
@@ -129,20 +123,8 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//Path to a program.
-CMAKE_NM:FILEPATH=/usr/bin/nm
-
-//Path to a program.
-CMAKE_OBJCOPY:FILEPATH=/usr/bin/objcopy
-
-//Path to a program.
-CMAKE_OBJDUMP:FILEPATH=/usr/bin/objdump
-
 //Value Computed by CMake
 CMAKE_PROJECT_NAME:STATIC=MySQL
-
-//Path to a program.
-CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
 
 //Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=' '
@@ -180,9 +162,6 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 
 //Flags used by the linker during Release with Debug Info builds.
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
-
-//Path to a program.
-CMAKE_STRIP:FILEPATH=/usr/bin/strip
 
 //If true, cmake will use relative paths in makefiles and projects.
 CMAKE_USE_RELATIVE_PATHS:BOOL=OFF
@@ -286,7 +265,7 @@ FORM_LIBRARY:FILEPATH=/usr/lib64/libform.so
 GETCONF:FILEPATH=/usr/bin/getconf
 
 //git command line client
-GIT_EXECUTABLE:FILEPATH=GIT_EXECUTABLE-NOTFOUND
+GIT_EXECUTABLE:FILEPATH=/usr/bin/git
 
 //path to the executable
 GLIBTOOLIZE_EXECUTABLE:FILEPATH=GLIBTOOLIZE_EXECUTABLE-NOTFOUND
@@ -369,7 +348,7 @@ MYSQL_DATADIR:PATH=/home/guosong/mysql5627/data
 MYSQL_DOCS_LOCATION:PATH=
 
 //MySQL maintainer-specific development environment
-MYSQL_MAINTAINER_MODE:BOOL=OFF
+MYSQL_MAINTAINER_MODE:BOOL=ON
 
 //MySQL project name
 MYSQL_PROJECT_NAME:STRING=MySQL
@@ -414,7 +393,7 @@ WITH_ATOMIC_LOCKS:STRING=
 WITH_BLACKHOLE_STORAGE_ENGINE:BOOL=ON
 
 //Use dbug/safemutex
-WITH_DEBUG:BOOL=OFF
+WITH_DEBUG:BOOL=1
 
 //Use flags from cmake/build_configurations/compiler_options.cmake
 WITH_DEFAULT_COMPILER_OPTIONS:BOOL=ON
@@ -467,7 +446,7 @@ WITH_PARTITION_STORAGE_ENGINE:BOOL=ON
 WITH_PERFSCHEMA_STORAGE_ENGINE:BOOL=ON
 
 //Generate PIC objects
-WITH_PIC:BOOL=OFF
+WITH_PIC:BOOL=ON
 
 //bundled (use yassl), yes (prefer os library if present, otherwise
 // use bundled), system (use os library), </path/to/custom/installation>
@@ -483,9 +462,6 @@ WITH_ZLIB:STRING=bundled
 
 //Dependencies for the target
 archive_LIB_DEPENDS:STATIC=general;-lpthread;general;zlib;
-
-//Dependencies for the target
-archive_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 audit_null_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;
@@ -506,16 +482,10 @@ binlog_LIB_DEPENDS:STATIC=general;-lpthread;
 blackhole_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
-blackhole_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
-
-//Dependencies for the target
 clientlib_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 csv_LIB_DEPENDS:STATIC=general;-lpthread;
-
-//Dependencies for the target
-csv_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 daemon_example_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;
@@ -530,9 +500,6 @@ edit_LIB_DEPENDS:STATIC=general;-lpthread;general;/usr/lib64/libcurses.so;
 federated_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
-federated_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
-
-//Dependencies for the target
 ftexample_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;
 
 //Dependencies for the target
@@ -543,9 +510,6 @@ heap_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 innobase_LIB_DEPENDS:STATIC=general;-lpthread;general;zlib;
-
-//Dependencies for the target
-innobase_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 libmysql_LIB_DEPENDS:STATIC=general;-lpthread;general;clientlib;general;dbug;general;strings;general;vio;general;mysys;general;mysys_ssl;general;zlib;general;yassl;general;taocrypt;general;dl;
@@ -594,9 +558,6 @@ partition_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 perfschema_LIB_DEPENDS:STATIC=general;-lpthread;
-
-//Dependencies for the target
-perfschema_embedded_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
 pfs_server_stubs_LIB_DEPENDS:STATIC=general;-lpthread;
@@ -683,8 +644,6 @@ BISON_USABLE:INTERNAL=1
 CAT_EXECUTABLE-ADVANCED:INTERNAL=1
 //Functions exported by client API
 CLIENT_API_FUNCTIONS:INTERNAL=get_tty_password;handle_options;load_defaults;mysql_thread_end;mysql_thread_init;myodbc_remove_escape;mysql_affected_rows;mysql_autocommit;mysql_stmt_bind_param;mysql_stmt_bind_result;mysql_change_user;mysql_character_set_name;mysql_close;mysql_commit;mysql_data_seek;mysql_debug;mysql_dump_debug_info;mysql_eof;mysql_errno;mysql_error;mysql_escape_string;mysql_hex_string;mysql_stmt_execute;mysql_stmt_fetch;mysql_stmt_fetch_column;mysql_fetch_field;mysql_fetch_field_direct;mysql_fetch_fields;mysql_fetch_lengths;mysql_fetch_row;mysql_field_count;mysql_field_seek;mysql_field_tell;mysql_free_result;mysql_get_client_info;mysql_get_host_info;mysql_get_proto_info;mysql_get_server_info;mysql_get_client_version;mysql_get_ssl_cipher;mysql_info;mysql_init;mysql_insert_id;mysql_kill;mysql_set_server_option;mysql_list_dbs;mysql_list_fields;mysql_list_processes;mysql_list_tables;mysql_more_results;mysql_next_result;mysql_num_fields;mysql_num_rows;mysql_options;mysql_stmt_param_count;mysql_stmt_param_metadata;mysql_ping;mysql_stmt_result_metadata;mysql_query;mysql_read_query_result;mysql_real_connect;mysql_real_escape_string;mysql_real_query;mysql_refresh;mysql_rollback;mysql_row_seek;mysql_row_tell;mysql_select_db;mysql_stmt_send_long_data;mysql_send_query;mysql_shutdown;mysql_ssl_set;mysql_stat;mysql_stmt_affected_rows;mysql_stmt_close;mysql_stmt_reset;mysql_stmt_data_seek;mysql_stmt_errno;mysql_stmt_error;mysql_stmt_free_result;mysql_stmt_num_rows;mysql_stmt_row_seek;mysql_stmt_row_tell;mysql_stmt_store_result;mysql_store_result;mysql_thread_id;mysql_thread_safe;mysql_use_result;mysql_warning_count;mysql_stmt_sqlstate;mysql_sqlstate;mysql_get_server_version;mysql_stmt_prepare;mysql_stmt_init;mysql_stmt_insert_id;mysql_stmt_attr_get;mysql_stmt_attr_set;mysql_stmt_field_count;mysql_set_local_infile_default;mysql_set_local_infile_handler;mysql_embedded;mysql_server_init;mysql_server_end;mysql_set_character_set;mysql_get_character_set_info;mysql_stmt_next_result;my_init;mysql_client_find_plugin;mysql_client_register_plugin;mysql_load_plugin;mysql_load_plugin_v;mysql_options4;mysql_plugin_options
-//ADVANCED property for variable: CMAKE_AR
-CMAKE_AR-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_BUILD_TOOL
 CMAKE_BUILD_TOOL-ADVANCED:INTERNAL=1
 //What is the target build tool cmake is generating for.
@@ -705,8 +664,6 @@ CMAKE_COMMAND:INTERNAL=/usr/bin/cmake
 CMAKE_CPACK_COMMAND:INTERNAL=/usr/bin/cpack
 //Path to ctest program executable.
 CMAKE_CTEST_COMMAND:INTERNAL=/usr/bin/ctest
-//ADVANCED property for variable: CMAKE_CXX_COMPILER
-CMAKE_CXX_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS
 CMAKE_CXX_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_DEBUG
@@ -717,8 +674,6 @@ CMAKE_CXX_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_RELWITHDEBINFO
 CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_C_COMPILER
-CMAKE_C_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS
 CMAKE_C_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS_DEBUG
@@ -731,8 +686,6 @@ CMAKE_C_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 CMAKE_C_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //Path to cache edit program executable.
 CMAKE_EDIT_COMMAND:INTERNAL=/usr/bin/ccmake
-//Executable file format
-CMAKE_EXECUTABLE_FORMAT:INTERNAL=ELF
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS
 CMAKE_EXE_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS_DEBUG
@@ -762,8 +715,6 @@ CMAKE_HAVE_PTHREAD_H:INTERNAL=1
 CMAKE_HOME_DIRECTORY:INTERNAL=/home/guosong/source/mysql-5.6.27
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=0
-//ADVANCED property for variable: CMAKE_LINKER
-CMAKE_LINKER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MAKE_PROGRAM
 CMAKE_MAKE_PROGRAM-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS
@@ -776,16 +727,8 @@ CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_NM
-CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
 CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=59
-//ADVANCED property for variable: CMAKE_OBJCOPY
-CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_OBJDUMP
-CMAKE_OBJDUMP-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_RANLIB
-CMAKE_RANLIB-ADVANCED:INTERNAL=1
 //Path to CMake installation.
 CMAKE_ROOT:INTERNAL=/usr/share/cmake
 //ADVANCED property for variable: CMAKE_SHARED_LINKER_FLAGS
@@ -814,10 +757,6 @@ CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_STATIC_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_STRIP
-CMAKE_STRIP-ADVANCED:INTERNAL=1
-//uname command
-CMAKE_UNAME:INTERNAL=/bin/uname
 //ADVANCED property for variable: CMAKE_USE_RELATIVE_PATHS
 CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
@@ -857,6 +796,8 @@ DTRACE-ADVANCED:INTERNAL=1
 ENABLED_LOCAL_INFILE-ADVANCED:INTERNAL=1
 //Details about finding Curses
 FIND_PACKAGE_MESSAGE_DETAILS_Curses:INTERNAL=[/usr/lib64/libcurses.so][/usr/include][v()]
+//Details about finding Git
+FIND_PACKAGE_MESSAGE_DETAILS_Git:INTERNAL=[/usr/bin/git][v1.7.1()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //Have symbol FIONREAD
@@ -1668,7 +1609,7 @@ MYSQL_DOCS_LOCATION-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: MYSQL_PROJECT_NAME
 MYSQL_PROJECT_NAME-ADVANCED:INTERNAL=1
 OLD_INSTALL_LAYOUT:INTERNAL=STANDALONE
-OLD_WITH_DEBUG:INTERNAL=0
+OLD_WITH_DEBUG:INTERNAL=1
 ONETIME_GTEST_WARNING:INTERNAL=1
 //Test QSORT_TYPE_IS_VOID
 QSORT_TYPE_IS_VOID:INTERNAL=1
@@ -1755,18 +1696,13 @@ STRUCT_DIRENT_HAS_D_NAMLEN:INTERNAL=
 //ADVANCED property for variable: SYSCONFDIR
 SYSCONFDIR-ADVANCED:INTERNAL=1
 TARGET_OBJECT_DIRECTORY_archive:INTERNAL=
-TARGET_OBJECT_DIRECTORY_archive_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_blackhole:INTERNAL=
-TARGET_OBJECT_DIRECTORY_blackhole_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_clientlib:INTERNAL=
 TARGET_OBJECT_DIRECTORY_csv:INTERNAL=
-TARGET_OBJECT_DIRECTORY_csv_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_federated:INTERNAL=
-TARGET_OBJECT_DIRECTORY_federated_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_heap:INTERNAL=
 TARGET_OBJECT_DIRECTORY_heap_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_innobase:INTERNAL=
-TARGET_OBJECT_DIRECTORY_innobase_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_myisam:INTERNAL=
 TARGET_OBJECT_DIRECTORY_myisam_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_myisammrg:INTERNAL=
@@ -1776,7 +1712,6 @@ TARGET_OBJECT_DIRECTORY_mysys_ssl:INTERNAL=
 TARGET_OBJECT_DIRECTORY_partition:INTERNAL=
 TARGET_OBJECT_DIRECTORY_partition_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_perfschema:INTERNAL=
-TARGET_OBJECT_DIRECTORY_perfschema_embedded:INTERNAL=
 TARGET_OBJECT_DIRECTORY_sql:INTERNAL=
 TARGET_OBJECT_DIRECTORY_sql_embedded:INTERNAL=
 //ADVANCED property for variable: TAR_EXECUTABLE

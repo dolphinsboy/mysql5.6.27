@@ -311,15 +311,13 @@ int ha_spartan::open(const char *name, int mode, uint test_if_locked)
 {
   DBUG_ENTER("ha_spartan::open");
   /*BEGIN GUOSONG MODIFICATION*/
-  Spartan_share *share;
   char name_buff[FN_REFLEN];
   if (!(share = get_share()))
     DBUG_RETURN(1);
+
   share->data_class->open_table(fn_format(name_buff, name, "", SDE_EXT,
               MY_REPLACE_EXT|MY_UNPACK_FILENAME));
 
-  /*if (!(share = get_share()))
-    DBUG_RETURN(1);*/
   /*END GUOSONG MODIFICATION*/
 
   thr_lock_data_init(&share->lock,&lock,NULL);
@@ -389,6 +387,11 @@ int ha_spartan::write_row(uchar *buf)
     probably need to do something with 'buf'. We report a success
     here, to pretend that the insert was successful.
   */
+  long long pos;
+  ha_statistic_increment(&SSV::ha_write_count);
+  mysql_mutex_lock(&share->mutex);
+  pos = share->data_class->write_row(buf, table->s->rec_buff_length);
+  mysql_mutex_unlock(&share->mutex);
   DBUG_RETURN(0);
 }
 
@@ -562,6 +565,11 @@ int ha_spartan::index_last(uchar *buf)
 int ha_spartan::rnd_init(bool scan)
 {
   DBUG_ENTER("ha_spartan::rnd_init");
+  /*START GUOSONG MODIFICATION*/
+  current_position = 0;
+  stats.records = 0;
+  ref_length = sizeof(long long);
+  /*END GUOSONG MODIFICATION*/
   DBUG_RETURN(0);
 }
 
@@ -592,7 +600,16 @@ int ha_spartan::rnd_next(uchar *buf)
   DBUG_ENTER("ha_spartan::rnd_next");
   MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
-  rc= HA_ERR_END_OF_FILE;
+  /*BEGIN GUOSONG MODIFICATION*/
+  rc = share->data_class->read_row(buf, table->s->rec_buff_length, 
+                                    current_position);
+  if (rc != -1)
+    current_position = (off_t)share->data_class->cur_position();
+  else
+    DBUG_RETURN(HA_ERR_END_OF_FILE);
+  stats.records++;
+  /*END GUOSONG MODIFICATION*/
+  /*rc= HA_ERR_END_OF_FILE;*/
   MYSQL_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
@@ -622,6 +639,9 @@ int ha_spartan::rnd_next(uchar *buf)
 void ha_spartan::position(const uchar *record)
 {
   DBUG_ENTER("ha_spartan::position");
+  /*BEGIN GUOSONG MODIFICATION*/
+  my_store_ptr(ref, ref_length, current_position);
+  /*END GUOSONG MODIFICATION*/
   DBUG_VOID_RETURN;
 }
 
@@ -645,7 +665,10 @@ int ha_spartan::rnd_pos(uchar *buf, uchar *pos)
   DBUG_ENTER("ha_spartan::rnd_pos");
   MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
-  rc= HA_ERR_WRONG_COMMAND;
+  ha_statistic_increment(&SSV::ha_read_rnd_next_count);
+  current_position = (off_t)my_get_ptr(pos, ref_length);
+  rc = share->data_class->read_row(buf, current_position, -1);
+  /*rc= HA_ERR_WRONG_COMMAND;*/
   MYSQL_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
@@ -692,6 +715,8 @@ int ha_spartan::rnd_pos(uchar *buf, uchar *pos)
 int ha_spartan::info(uint flag)
 {
   DBUG_ENTER("ha_spartan::info");
+  if(stats.records<2)
+    stats.records = 2;
   DBUG_RETURN(0);
 }
 
@@ -882,17 +907,17 @@ int ha_spartan::delete_table(const char *name)
 int ha_spartan::rename_table(const char * from, const char * to)
 {
   /*BEGIN GUOSONG MODIFICATION*/
-  char data_from[FN_REFLEN];
+  /*char data_from[FN_REFLEN];
   char data_to[FN_REFLEN];
-  int i = 0;
+  int i = 0;*/
 
   DBUG_ENTER("ha_spartan::rename_table ");
   /*i = my_copy(fn_format(data_from, from, "", SDE_EXT,
           MY_REPLACE_EXT|MY_UNPACK_FILENAME),
           fn_format(data_to, to,"",SDE_EXT,
           MY_REPLACE_EXT|MY_UNPACK_FILENAME), MYF(0));*/
-  my_delete(data_from, MYF(0));
-  DBUG_RETURN(i);
+  /*my_delete(data_from, MYF(0));*/
+  DBUG_RETURN(0);
   /*DBUG_RETURN(HA_ERR_WRONG_COMMAND);*/
 }
 

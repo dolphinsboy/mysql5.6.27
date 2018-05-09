@@ -38,7 +38,7 @@ int Spartan_data::create_table(char *path)
 
 int Spartan_data::open_table(char *path)
 {
-    DBUG_ENTER("Spartan_data::open_table")
+    DBUG_ENTER("Spartan_data::open_table");
     data_file = my_open(path,O_RDWR|O_CREAT|O_BINARY|O_SHARE, MYF(0));
     if(data_file == -1)
         DBUG_RETURN(errno);
@@ -110,7 +110,11 @@ long long Spartan_data::write_row(uchar *buf, int length)
     if (i == -1)
         pos = i;
     else
+    {
         number_records++;
+        write_header();
+    }
+        
 
     DBUG_RETURN(pos);
 }
