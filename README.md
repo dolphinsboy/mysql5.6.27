@@ -470,4 +470,103 @@ MYSQL_ADD_PLUGIN(spartan ${SPARTAN_SOURCES} STORAGE_ENGINE MODULE_ONLY)
 TARGET_LINK_LIBRARIES(spartan mysys)
 ```
 
+####4.1.2 修改头文件ha_spartan.h
 
+```c
+#include "spartan_index.h"
+
+class Spartan_share : public Handler_share {
+public:
+  mysql_mutex_t mutex;
+  THR_LOCK lock;
+  Spartan_share();
+  ~Spartan_share()
+  {
+    /*BEGIN GUOSONG MODIFICATION*/
+    if(data_class != NULL)
+      delete data_class;
+    if(index_class != NULL)
+      delete index_class;
+    data_class = NULL;
+    index_class = NULL;
+
+    /*END GUOSONG MODIFICATION*/
+    thr_lock_delete(&lock);
+    mysql_mutex_destroy(&mutex);
+  }
+  /*BEGIN GUOSONG MODIFICATION*/
+  Spartan_data *data_class;
+  Spartan_index *index_class;
+  /*END GUOSONG MODIFICATION*/ 
+};
+```
+
+####4.1.3 修改ha__spartan.h增加索引
+
+```c
+class ha_spartan: public handler
+{
+  THR_LOCK_DATA lock;      ///< MySQL lock
+  Spartan_share *share;    ///< Shared lock info
+  Spartan_share *get_share(); ///< Get the share
+/*BEGIN GUOSONG MODIFICATION*/
+/*data文件scan的时候文件fd当前位置pos*/
+  off_t current_position;
+/*END GUOSONG MODIFICATION*/
+
+public:
+  ha_spartan(handlerton *hton, TABLE_SHARE *table_arg);
+  ~ha_spartan()
+  {
+  }
+
+  const char *index_type(uint inx) { return "Spartan_index"; }
+
+  ulonglong table_flags() const
+  {
+    return HA_NO_BLOBS | HA_NO_AUTO_INCREMENT| HA_BINLOG_STMT_CAPABLE;
+  }
+
+  ulong index_flags(uint inx, uint part, bool all_parts) const
+  {
+    return (HA_READ_NEXT | HA_READ_PREV | HA_READ_RANGE|
+            HA_READ_ORDER | HA_KEYREAD_ONLY);
+  }
+
+  uint max_supported_record_length() const { return HA_MAX_REC_LENGTH; }
+
+  uint max_supported_keys()          const { return 1; }
+  uint max_supported_key_parts()     const { return 1; }
+  uint max_supported_key_length()    const { return 128; }
+```
+
+#### 4.1.3测试
+
+```sql
+mysql> show create table t_idx\G
+*************************** 1. row ***************************
+       Table: t_idx
+Create Table: CREATE TABLE `t_idx` (
+  `col_a` int(11) NOT NULL DEFAULT '0',
+  `col_b` varchar(10) NOT NULL DEFAULT ' ',
+  PRIMARY KEY (`col_a`)
+) ENGINE=Spartan DEFAULT CHARSET=utf8
+1 row in set (0.00 sec)
+
+mysql> show index from t_idx\G
+*************************** 1. row ***************************
+        Table: t_idx
+   Non_unique: 0
+     Key_name: PRIMARY
+ Seq_in_index: 1
+  Column_name: col_a
+    Collation: A
+  Cardinality: NULL
+     Sub_part: NULL
+       Packed: NULL
+         Null: 
+   Index_type: Spartan_index
+      Comment: 
+Index_comment: 
+1 row in set (0.00 sec)
+```
