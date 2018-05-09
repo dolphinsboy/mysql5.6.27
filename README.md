@@ -231,6 +231,10 @@ mysql> system ls -lh ./data/test/t1.*
 
 ## 3 支持insert操作
 
+### 3.0 insert操作流程
+
+![insert](images/insert.png)
+
 ### 3.1 增加data_file对应的pos变量
 
 ```c
