@@ -229,3 +229,165 @@ mysql> system ls -lh ./data/test/t1.*
 -rw-rw---- 1 my5627 my5627    0 May  8 17:10 ./data/test/t1.sde
 ```
 
+## 3 支持insert操作
+
+### 3.1 增加data_file对应的pos变量
+
+```c
+class ha_spartan: public handler
+{
+  THR_LOCK_DATA lock;      ///< MySQL lock
+  Spartan_share *share;    ///< Shared lock info
+  Spartan_share *get_share(); ///< Get the share
+/*BEGIN GUOSONG MODIFICATION*/
+/*data文件scan的时候文件fd当前位置pos*/
+  off_t current_position;
+/*END GUOSONG MODIFICATION*/
+...
+}
+```
+
+### 3.2 在ha_spartan.cc中修改rnd_init函数
+
+```c
+int ha_spartan::rnd_init(bool scan)
+{
+  DBUG_ENTER("ha_spartan::rnd_init");
+  /*START GUOSONG MODIFICATION*/
+  current_position = 0;
+  stats.records = 0;
+  ref_length = sizeof(long long);
+  /*END GUOSONG MODIFICATION*/
+  DBUG_RETURN(0);
+}
+```
+进行table scan的时候一定出现设置.
+
+### 3.3 在ha_spartan.cc中修改rnd_next函数
+
+遍历每个行的时候会访问.
+从数据文件中获取每一行数据,并检测是否到文件尾部.
+
+
+```c
+int ha_spartan::rnd_next(uchar *buf)
+{
+  int rc;
+  DBUG_ENTER("ha_spartan::rnd_next");
+  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+                       TRUE);
+  /*BEGIN GUOSONG MODIFICATION*/
+  rc = share->data_class->read_row(buf, table->s->rec_buff_length, 
+                                    current_position);
+  if (rc != -1)
+    current_position = (off_t)share->data_class->cur_position();
+  else
+    DBUG_RETURN(HA_ERR_END_OF_FILE);
+  stats.records++;
+  /*END GUOSONG MODIFICATION*/
+  /*rc= HA_ERR_END_OF_FILE;*/
+  MYSQL_READ_ROW_DONE(rc);
+  DBUG_RETURN(rc);
+}
+```
+
+### 3.4更新position位置信息
+
+```c
+
+void ha_spartan::position(const uchar *record)
+{
+  DBUG_ENTER("ha_spartan::position");
+  /*BEGIN GUOSONG MODIFICATION*/
+  my_store_ptr(ref, ref_length, current_position);
+  /*END GUOSONG MODIFICATION*/
+  DBUG_VOID_RETURN;
+}
+```
+
+### 3.5 保存当前pos,并读取其下一行
+
+```c
+int ha_spartan::rnd_pos(uchar *buf, uchar *pos)
+{
+  int rc;
+  DBUG_ENTER("ha_spartan::rnd_pos");
+  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+                       TRUE);
+  ha_statistic_increment(&SSV::ha_read_rnd_next_count);
+  current_position = (off_t)my_get_ptr(pos, ref_length);
+  rc = share->data_class->read_row(buf, current_position, -1);
+  /*rc= HA_ERR_WRONG_COMMAND;*/
+  MYSQL_READ_ROW_DONE(rc);
+  DBUG_RETURN(rc);
+}
+```
+
+### 3.6 修改ha_spartan.cc中的info函数
+
+```c
+int ha_spartan::info(uint flag)
+{
+  DBUG_ENTER("ha_spartan::info");
+  if(stats.records<2)
+    stats.records = 2;
+  DBUG_RETURN(0);
+}
+```
+
+### 3.7 修改ha_spartan::write_row实现真正文件的操作
+
+```c
+int ha_spartan::write_row(uchar *buf)
+{
+  DBUG_ENTER("ha_spartan::write_row");
+  /*
+    spartan of a successful write_row. We don't store the data
+    anywhere; they are thrown away. A real implementation will
+    probably need to do something with 'buf'. We report a success
+    here, to pretend that the insert was successful.
+  */
+  long long pos;
+  ha_statistic_increment(&SSV::ha_write_count);
+  mysql_mutex_lock(&share->mutex);
+  pos = share->data_class->write_row(buf, table->s->rec_buff_length);
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
+}
+```
+
+### 3.8 测试
+
+```sql
+mysql> show create table t\G
+*************************** 1. row ***************************
+       Table: t
+Create Table: CREATE TABLE `t` (
+  `col_a` int(11) DEFAULT NULL,
+  `col_b` varchar(10) NOT NULL DEFAULT ' '
+) ENGINE=spartan DEFAULT CHARSET=utf8
+1 row in set (0.00 sec)
+
+mysql> insert into t values(1, "test1");
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into t values(1, "test2");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into t values(2, "test2"); 
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into t values(4, "test4");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select * from t;
++-------+-------+
+| col_a | col_b |
++-------+-------+
+|     1 | test1 |
+|     1 | test2 |
+|     2 | test2 |
+|     4 | test4 |
++-------+-------+
+4 rows in set (0.00 sec)
+```
