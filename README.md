@@ -391,3 +391,63 @@ mysql> select * from t;
 +-------+-------+
 4 rows in set (0.00 sec)
 ```
+
+### 3.9 增加update|delete|truncate操作
+
+#### update
+
+```c
+int ha_spartan::update_row(const uchar *old_data, uchar *new_data)
+{
+
+  DBUG_ENTER("ha_spartan::update_row");
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->update_row((uchar*)old_data, new_data,
+        table->s->rec_buff_length, current_position - 
+        share->data_class->row_size(table->s->rec_buff_length));
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
+}
+```
+
+#### delete
+
+```c
+int ha_spartan::delete_row(const uchar *buf)
+{
+  DBUG_ENTER("ha_spartan::delete_row");
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->delete_row((uchar*)buf,
+          table->s->rec_buff_length,
+          current_position - 
+          share->data_class->row_size(table->s->rec_buff_length));
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
+}
+```
+
+#### delete_all_rows
+
+```c
+int ha_spartan::delete_all_rows()
+{
+  DBUG_ENTER("ha_spartan::delete_all_rows");
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->trunc_table();
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
+}
+```
+
+#### truncate
+
+```c
+int ha_spartan::truncate()
+{
+  DBUG_ENTER("ha_spartan::truncate");
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->trunc_table();
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
+}
+```
