@@ -423,7 +423,12 @@ int ha_spartan::update_row(const uchar *old_data, uchar *new_data)
 {
 
   DBUG_ENTER("ha_spartan::update_row");
-  DBUG_RETURN(HA_ERR_WRONG_COMMAND);
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->update_row((uchar*)old_data, new_data,
+        table->s->rec_buff_length, current_position - 
+        share->data_class->row_size(table->s->rec_buff_length));
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
 }
 
 
@@ -450,7 +455,13 @@ int ha_spartan::update_row(const uchar *old_data, uchar *new_data)
 int ha_spartan::delete_row(const uchar *buf)
 {
   DBUG_ENTER("ha_spartan::delete_row");
-  DBUG_RETURN(HA_ERR_WRONG_COMMAND);
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->delete_row((uchar*)buf,
+          table->s->rec_buff_length,
+          current_position - 
+          share->data_class->row_size(table->s->rec_buff_length));
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
 }
 
 
@@ -759,7 +770,10 @@ int ha_spartan::extra(enum ha_extra_function operation)
 int ha_spartan::delete_all_rows()
 {
   DBUG_ENTER("ha_spartan::delete_all_rows");
-  DBUG_RETURN(HA_ERR_WRONG_COMMAND);
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->trunc_table();
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
 }
 
 
