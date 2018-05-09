@@ -796,7 +796,10 @@ int ha_spartan::delete_all_rows()
 int ha_spartan::truncate()
 {
   DBUG_ENTER("ha_spartan::truncate");
-  DBUG_RETURN(HA_ERR_WRONG_COMMAND);
+  mysql_mutex_lock(&share->mutex);
+  share->data_class->trunc_table();
+  mysql_mutex_unlock(&share->mutex);
+  DBUG_RETURN(0);
 }
 
 
