@@ -135,6 +135,7 @@ Spartan_share::Spartan_share()
                    &mutex, MY_MUTEX_INIT_FAST);
   /*BEGIN GUOSONG MODIFICATION*/
   data_class = new Spartan_data();
+  index_class = new Spartan_index();
   /*END GUOSONG MODIFICATION*/
 }
 

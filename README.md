@@ -455,3 +455,19 @@ int ha_spartan::truncate()
   DBUG_RETURN(0);
 }
 ```
+
+## 4.增加索引功能
+
+### 4.1 增加索引的创建 
+
+#### 4.1.1 修改storage/spartan/CMakeLists.txt
+
+```c
+SET(SPARTAN_PLUGIN_STATIC "spartan")
+SET(SPARTAN_PLUGIN_DYNAMIC "spartan")
+SET(SPARTAN_SOURCES ha_spartan.cc spartan_data.cc spartan_index.cc)
+MYSQL_ADD_PLUGIN(spartan ${SPARTAN_SOURCES} STORAGE_ENGINE MODULE_ONLY)
+TARGET_LINK_LIBRARIES(spartan mysys)
+```
+
+

@@ -37,6 +37,7 @@
 #include "my_base.h"                     /* ha_rows */
 
 #include "spartan_data.h"
+#include "spartan_index.h"
 
 /** @brief
   Spartan_share is a class that will be shared among all open handlers.
@@ -52,13 +53,18 @@ public:
     /*BEGIN GUOSONG MODIFICATION*/
     if(data_class != NULL)
       delete data_class;
+    if(index_class != NULL)
+      delete index_class;
     data_class = NULL;
+    index_class = NULL;
+
     /*END GUOSONG MODIFICATION*/
     thr_lock_delete(&lock);
     mysql_mutex_destroy(&mutex);
   }
   /*BEGIN GUOSONG MODIFICATION*/
   Spartan_data *data_class;
+  Spartan_index *index_class;
   /*END GUOSONG MODIFICATION*/ 
 };
 
@@ -84,13 +90,13 @@ public:
   /** @brief
     The name that will be used for display purposes.
    */
-  const char *table_type() const { return "spartan"; }
+  const char *table_type() const { return "Spartan"; }
 
   /** @brief
     The name of the index type that will be used for display.
     Don't implement this method unless you really have indexes.
    */
-  const char *index_type(uint inx) { return "HASH"; }
+  const char *index_type(uint inx) { return "Spartan_index"; }
 
   /** @brief
     The file extensions.
@@ -108,7 +114,7 @@ public:
       an engine that can only handle statement-based logging. This is
       used in testing.
     */
-    return HA_BINLOG_STMT_CAPABLE;
+    return HA_NO_BLOBS | HA_NO_AUTO_INCREMENT| HA_BINLOG_STMT_CAPABLE;
   }
 
   /** @brief
@@ -123,7 +129,8 @@ public:
   */
   ulong index_flags(uint inx, uint part, bool all_parts) const
   {
-    return 0;
+    return (HA_READ_NEXT | HA_READ_PREV | HA_READ_RANGE|
+            HA_READ_ORDER | HA_KEYREAD_ONLY);
   }
 
   /** @brief
@@ -144,7 +151,7 @@ public:
     There is no need to implement ..._key_... methods if your engine doesn't
     support indexes.
    */
-  uint max_supported_keys()          const { return 0; }
+  uint max_supported_keys()          const { return 1; }
 
   /** @brief
     unireg.cc will call this to make sure that the storage engine can handle
@@ -155,7 +162,7 @@ public:
     There is no need to implement ..._key_... methods if your engine doesn't
     support indexes.
    */
-  uint max_supported_key_parts()     const { return 0; }
+  uint max_supported_key_parts()     const { return 1; }
 
   /** @brief
     unireg.cc will call this to make sure that the storage engine can handle
@@ -166,7 +173,7 @@ public:
     There is no need to implement ..._key_... methods if your engine doesn't
     support indexes.
    */
-  uint max_supported_key_length()    const { return 0; }
+  uint max_supported_key_length()    const { return 128; }
 
   /** @brief
     Called in test_quick_select to determine if indexes should be used.

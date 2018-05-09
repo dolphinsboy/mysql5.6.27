@@ -51,6 +51,7 @@ int Spartan_index::open_index(char *path)
 int Spartan_index::read_header()
 {
     DBUG_ENTER("Spartan_index::read_header");
+    int i;
     if (block_size == -1)
     {
         my_seek(index_file, 0l, MY_SEEK_SET, MYF(0));
@@ -192,7 +193,7 @@ int Spartan_index::insert_key(SDE_INDEX *ndx, bool allow_dupes)
             p = new SDE_NDX_NODE();
             n->next = p;
             p->prev = n;
-            memcpy(p->key_ndx.key, ndx->key, max_key_length);
+            memcpy(p->key_ndx.key, ndx->key, max_key_len);
             p->key_ndx.pos = ndx->pos;
             p->key_ndx.length = ndx->length;
         }
@@ -200,7 +201,7 @@ int Spartan_index::insert_key(SDE_INDEX *ndx, bool allow_dupes)
         {
             /*在n和p之间插入o节点,n在前,p在后*/
             o = new SDE_NDX_NODE();
-            memcpy(o->key_ndx.key, ndx->key, max_key_length);
+            memcpy(o->key_ndx.key, ndx->key, max_key_len);
             o->key_ndx.pos = ndx->pos;
             o->key_ndx.length = ndx->length;
 
@@ -506,7 +507,7 @@ int Spartan_index::destroy_index()
 {
     /*清空内存中的双向链表*/
     SDE_NDX_NODE *n = root;
-    DBUG_RETURN("Spartan_index::destroy_index");
+    DBUG_ENTER("Spartan_index::destroy_index");
 
     while(root != NULL)
     {

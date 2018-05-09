@@ -1,11 +1,12 @@
 #include "my_global.h"
 #include "my_sys.h"
 
-const long METADATA_SIZE = sizeof(int) + sizeof(bool)
+const long METADATA_SIZE = sizeof(int) + sizeof(bool);
+typedef uchar byte;
 
 struct SDE_INDEX
 {
-    byte *key;
+    uchar key[128];
     /*数据文件对应的位置*/
     long long pos;
     int length;
@@ -29,6 +30,7 @@ public:
     int create_index(char *path, int keylen);
     int insert_key(SDE_INDEX *ndx, bool allow_dupes);
     int delete_key(byte *buf, long long pos, int key_len);
+    int update_key(uchar *buf, long long pos, int key_len);
     long long get_index_pos(byte *buf, int key_len);
     long long get_first_pos();
     byte *get_first_key();
@@ -42,6 +44,7 @@ public:
     SDE_NDX_NODE *seek_index_pos(byte *key, int key_len);
     int save_index();
     int trunc_index();
+    int destroy_index();
 private:
     File index_file;
     int max_key_len;

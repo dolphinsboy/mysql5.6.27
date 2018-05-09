@@ -587,7 +587,7 @@ semisync_slave_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;
 slave_LIB_DEPENDS:STATIC=general;-lpthread;
 
 //Dependencies for the target
-spartan_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;
+spartan_LIB_DEPENDS:STATIC=general;-lpthread;general;mysqlservices;general;mysys;
 
 //Dependencies for the target
 sql_LIB_DEPENDS:STATIC=general;-lpthread;general;blackhole;general;archive;general;zlib;general;federated;general;myisammrg;general;perfschema;general;innobase;general;zlib;general;heap;general;myisam;general;csv;general;partition;general;mysys;general;mysys_ssl;general;dbug;general;strings;general;vio;general;regex;general;crypt;general;dl;general;yassl;general;taocrypt;
