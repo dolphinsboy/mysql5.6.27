@@ -472,7 +472,7 @@ TARGET_LINK_LIBRARIES(spartan mysys)
 
 之前出现过生成的ha_spartan.so找不到my_copy的问题,可以通过最后一行解决,更多参考[cmake 添加头文件目录，链接动态、静态库](https://www.cnblogs.com/binbinjx/p/5626916.html)
 
-####4.1.2 修改头文件ha_spartan.h
+#### 4.1.2 修改头文件ha_spartan.h
 
 ```c
 #include "spartan_index.h"
@@ -503,7 +503,7 @@ public:
 };
 ```
 
-####4.1.3 修改ha__spartan.h增加索引
+#### 4.1.3 修改ha__spartan.h增加索引
 
 ```c
 class ha_spartan: public handler
@@ -572,3 +572,23 @@ mysql> show index from t_idx\G
 Index_comment: 
 1 row in set (0.00 sec)
 ```
+
+### 4.2 支持索引
+
+- ha_spartan::open
+- ha_spartan::create
+- ha_spartan::close
+- ha_spartan::get_key
+- ha_spartan::get_key_len
+- ha_spartan::index_key_map
+- ha_spartan::update_row
+- ha_spartan::write_row
+- ha_spartan::delete_row
+- ha_spartan::delete_table
+- ha_spartan::rename_table
+- ha_spartan::index_next
+- ha_spartan::index_prev
+- ha_spartan::index_first
+- ha_spartan::index_last
+
+具体可以参考文件上述函数的位置.
