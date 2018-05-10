@@ -575,6 +575,7 @@ Index_comment:
 
 ### 4.2 支持索引
 
+#### 4.2.1 修改文件列表
 - ha_spartan::open
 - ha_spartan::create
 - ha_spartan::close
@@ -592,3 +593,49 @@ Index_comment:
 - ha_spartan::index_last
 
 具体可以参考文件上述函数的位置.
+
+#### 4.2.2 测试
+
+```sql
+mysql> select * from t_idx where col_a >=10;
++-------+--------+
+| col_a | col_b  |
++-------+--------+
+|    10 | test10 |
+|    11 | test11 |
+|    12 | test12 |
++-------+--------+
+
+```
+
+```c
+Breakpoint 3, ha_spartan::index_next (this=0x7fff340284b0, buf=0x7fff34028700 "\n") at /home/guosong/source/mysql-5.6.27/storage/spartan/ha_spartan.cc:539
+539       uchar *key = 0;
+(gdb) bt
+#0  ha_spartan::index_next (this=0x7fff340284b0, buf=0x7fff34028700 "\n") at /home/guosong/source/mysql-5.6.27/storage/spartan/ha_spartan.cc:539
+#1  0x0000000000652497 in handler::ha_index_next (this=0x7fff340284b0, buf=0x7fff34028700 "\n") at /home/guosong/source/mysql-5.6.27/sql/handler.cc:2812
+#2  0x000000000065a435 in handler::read_range_next (this=0x7fff340284b0) at /home/guosong/source/mysql-5.6.27/sql/handler.cc:6740
+#3  0x000000000065846c in handler::multi_range_read_next (this=0x7fff340284b0, range_info=0x7ffff7f64bb0) at /home/guosong/source/mysql-5.6.27/sql/handler.cc:5843
+#4  0x000000000098c648 in QUICK_RANGE_SELECT::get_next (this=0x7fff3402c630) at /home/guosong/source/mysql-5.6.27/sql/opt_range.cc:10644
+#5  0x00000000009a638c in rr_quick (info=0x7fff3402e6a8) at /home/guosong/source/mysql-5.6.27/sql/records.cc:369
+#6  0x00000000007c2bdd in sub_select (join=0x7fff34005c18, join_tab=0x7fff3402e618, end_of_records=false)
+    at /home/guosong/source/mysql-5.6.27/sql/sql_executor.cc:1259
+#7  0x00000000007c25c0 in do_select (join=0x7fff34005c18) at /home/guosong/source/mysql-5.6.27/sql/sql_executor.cc:933
+#8  0x00000000007c0473 in JOIN::exec (this=0x7fff34005c18) at /home/guosong/source/mysql-5.6.27/sql/sql_executor.cc:194
+#9  0x000000000082342c in mysql_execute_select (thd=0x4a76b80, select_lex=0x4a79118, free_join=true) at /home/guosong/source/mysql-5.6.27/sql/sql_select.cc:1100
+#10 0x0000000000823743 in mysql_select (thd=0x4a76b80, tables=0x7fff34005288, wild_num=1, fields=..., conds=0x7fff340059b8, order=0x4a792e0, group=0x4a79218, 
+    having=0x0, select_options=2147748608, result=0x7fff34005bf0, unit=0x4a78ad0, select_lex=0x4a79118) at /home/guosong/source/mysql-5.6.27/sql/sql_select.cc:1221
+#11 0x0000000000821758 in handle_select (thd=0x4a76b80, result=0x7fff34005bf0, setup_tables_done_option=0) at /home/guosong/source/mysql-5.6.27/sql/sql_select.cc:110
+#12 0x00000000007fa835 in execute_sqlcom_select (thd=0x4a76b80, all_tables=0x7fff34005288) at /home/guosong/source/mysql-5.6.27/sql/sql_parse.cc:5134
+#13 0x00000000007f2f90 in mysql_execute_command (thd=0x4a76b80) at /home/guosong/source/mysql-5.6.27/sql/sql_parse.cc:2656
+#14 0x00000000007fd42e in mysql_parse (thd=0x4a76b80, rawbuf=0x7fff34005070 "select * from t_idx where col_a >=10", length=36, parser_state=0x7ffff7f66700)
+    at /home/guosong/source/mysql-5.6.27/sql/sql_parse.cc:6386
+#15 0x00000000007efdc5 in dispatch_command (command=COM_QUERY, thd=0x4a76b80, packet=0x4b531b1 "", packet_length=36)
+    at /home/guosong/source/mysql-5.6.27/sql/sql_parse.cc:1340
+#16 0x00000000007eed93 in do_command (thd=0x4a76b80) at /home/guosong/source/mysql-5.6.27/sql/sql_parse.cc:1037
+#17 0x00000000007b4d4a in do_handle_one_connection (thd_arg=0x4a76b80) at /home/guosong/source/mysql-5.6.27/sql/sql_connect.cc:982
+#18 0x00000000007b4825 in handle_one_connection (arg=0x4a76b80) at /home/guosong/source/mysql-5.6.27/sql/sql_connect.cc:898
+#19 0x0000000000b2a799 in pfs_spawn_thread (arg=0x4ae5ef0) at /home/guosong/source/mysql-5.6.27/storage/perfschema/pfs.cc:1860
+#20 0x00007ffff7bc7df3 in start_thread () from /lib64/libpthread.so.0
+#21 0x00007ffff6c9c2cd in clone () from /lib64/libc.so.6
+```
